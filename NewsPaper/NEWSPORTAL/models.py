@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 class Author(models.Model):
     rating = models.IntegerField(default=0)
 
-    users = models.OneToOneField(User, on_delete=models.CASCADE, primary_key= True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def update_rating(self):
         posts_rating = 0
@@ -42,7 +42,7 @@ class Post(models.Model):
         (article, 'статья'),
         (news, 'новость')
     ]
-    type = models.СhoiceField(max_length = 2, choices = CHOISES)
+    type = models.CharField(max_length = 2, choices = CHOISES)
     post_created_at = models.DateTimeField(auto_now_add = True)
 
     category = models.ManyToManyField(Category, through = 'PostCategory')
@@ -77,7 +77,7 @@ class PostCategory(models.Model):
 class Comment(models.Model):
 
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,primary_key= True)
 
     comment_text = models.TextField()
     comment_created_at = models.DateTimeField(auto_now_add = True)
