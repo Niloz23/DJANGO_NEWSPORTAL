@@ -1,0 +1,14 @@
+'flatpages/default.html'
+
+{% block content %}
+  <h2>Поиск новостей</h2>
+  <form method="get">
+    {{ filter.form.as_p }}
+    <button type="submit">Поиск</button>
+  </form>
+  <ul>
+    {% for post in filter.qs %}
+      <li>{{ post.title }} - {{ post.author.users.username }} - {{ post.post_created_at }}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
