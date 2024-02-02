@@ -8,6 +8,6 @@ urlpatterns = [
 
    path('', Newslist.as_view()),
    path('<int:pk>', NewsDetail.as_view()),
-   path('search/', PostSearchView.as_view()),
+   path('news/search/', PostSearchView.as_view()),
 
 ]

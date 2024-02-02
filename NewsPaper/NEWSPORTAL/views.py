@@ -37,13 +37,11 @@ class NewsDetail(DetailView):
     template_name =  'default.html'
     context_object_name =  'posts'
 
-class PostSearchView(View):
-    template_name = 'NEWSPORTAL/post_search.html'
-
-    def get(self, request, *args, **kwargs):
-        filter = PostFilter(request.GET, queryset=Post.objects.all())
-        return render(request, self.template_name, {'filter': filter})
-
+class PostSearchView(ListView):
+    model = Post
+    ordering = '-creation_date'
+    template_name = 'post_search.html'
+    context_object_name = 'posts'
 
 
 
