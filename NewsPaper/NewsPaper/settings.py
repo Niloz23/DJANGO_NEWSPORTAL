@@ -12,7 +12,128 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv,find_dotenv
+import logging
 
+logger = logging.getLogger('django')
+logger = logging.getLogger('django.request')
+logger = logging.getLogger('django.server')
+logger = logging.getLogger('django.template')
+logger = logging.getLogger('django.db.backends')
+logger = logging.getLogger('django.security')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'style' : '{',
+    'formatters': {
+        'simple': {
+            'format': '%(levelname)s %(message)s',
+            'datefmt': '%Y.%m.%d %H:%M:',
+        },
+        'info': {
+            'format': '%(asctime)s % (levelname)s %(module)s %(message)s%',
+            'datefmt': '%Y.%m.%d %H:%M:',
+        },
+        'warning': {
+            'format': '%(asctime)s % (levelname)s % (pathname)s %(message)s%',
+            'datefmt': '%Y.%m.%d %H:%M:',
+
+        },
+        'errors': {
+            'format': '%(asctime)s % (levelname)s % (pathname)s %(message)s %(exc_info)s',
+            'datefmt': '%Y.%m.%d %H:%M:',
+
+        },
+        'security': {
+            'format': '%(asctime)s % (levelname)s % (module)s %(message)s',
+            'datefmt': '%Y.%m.%d %H:%M:',
+
+        }
+    },
+
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+
+        'file_general':{
+            'level':'INFO',
+            'filters': ['require_debug_false'],
+            'class':'logging.FileHandler',
+            'formatter':'info',
+            'filename':'logs/general.log'
+        },
+
+        'file_errors':{
+            'level':'ERROR',
+            'filters': ['require_debug_true'],
+            'class':'logging.FileHandler',
+            'formatter':'errors',
+            'filename':'logs/errors.log',
+        },
+
+        'file_security':{
+            'level':'WARNING',
+            'filters': ['require_debug_true'],
+            'class':'logging.FileHandler',
+            'formatter':'security',
+            'filename':'logs/security.log',
+        },
+
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'warning',
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file_general'],
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console', 'file_errors', 'file_general', 'mail_admins'],
+            'propagate': True,
+        },
+
+        'django.server': {
+            'handlers': ['file_errors', 'mail_admins'],
+            'propagate': True,
+        },
+
+        'django.template': {
+            'handlers': ['file_errors'],
+            'propagate': True,
+        },
+
+        'django.db.backends': {
+            'handlers': ['file_errors'],
+            'propagate': True,
+        },
+
+        'django.security': {
+            'handlers': ['file_errors'],
+            'propagate': True,
+        }
+    }
+}
+
+
+load_dotenv(find_dotenv())
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,7 +142,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-rl+a*4l-+o-*v@8=0onwg_(^dc=6*96c%_hrfs!94^m*r9w_tb'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -47,6 +168,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'django_apscheduler',
 ]
 
 MIDDLEWARE = [
@@ -129,6 +251,10 @@ USE_TZ = True
 
 SITE_ID = 1
 
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale')
+]
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -144,7 +270,8 @@ STATICFILES_DIRS = [
 ]
 
 LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/news/profile/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 
 ACCOUNT_EMAIL_REQUIRED = True
@@ -152,3 +279,18 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_FORMS = {'signup': 'sign.models.CommonSignupForm'}
+
+EMAIL_HOST ='smtp.yandex.ru'
+EMAIL_PORT= 465
+EMAIL_HOST_USER= os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD= os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_USE_SSL=True
+DEFAULT_FROM_EMAIL= os.getenv('DEFAULT_FROM_EMAIL')
+
+EMAIL_BACKEND= 'django.core.mail.backends.smtp.EmailBackend'
+
+APSCHEDULER_DATETIME_FORMAT="N j, Y, f:s a"
+APSCHEDULER_RUN_NOW_TIMEOUT= 25
+
+SITE_URL= 'http://127.0.0.1:8000'

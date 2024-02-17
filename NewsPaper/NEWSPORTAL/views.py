@@ -1,16 +1,38 @@
+from django.shortcuts import render
+import datetime
 from django.urls import reverse_lazy
-from datetime import datetime
 from django.views.generic import ListView, DetailView,  CreateView, UpdateView, DeleteView, TemplateView
 from .models import Post
 from .filters import PostFilter
 from .forms import PostForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from .models import Category
-from .tasks import info_after_new_post
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
+from django.core.mail import send_mail
+from .tasks import info_after_new_post
+from .tasks import notifications_on_monday
+from django.utils.translation import gettext as _
+from django.http import HttpResponse
+from django.views import View
+class IndexView(LoginRequiredMixin, TemplateView):
+    template_name = 'index.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_authors'] = not self.request.user.groups.filter(name='Authors').exists()
+        return context
+
+
+class Index(View):
+    def get(self, request):
+        string = _('Hello world')
+
+        return HttpResponse(string)
 class PostList(ListView):
     model = Post
     ordering = 'title'
@@ -132,6 +154,13 @@ class CategoryListView(ListView):
         context['is_not_subscriber']= self.request.user not in self.category.subscribers.all()
         context['category']=self.category
         return context
+@login_required
+def subscribe(request, pk):
+    user=request.user
+    category=Category.objects.get(id=pk)
+    category.subscribers.add(user)
 
+    message='Вы успешно подписались на рассылку новостей категории'
+    return render(request, 'subscribe.html', {'category': category, 'message': message})
 
 
