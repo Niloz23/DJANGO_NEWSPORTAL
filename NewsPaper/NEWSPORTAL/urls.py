@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import PostList, PostDetail, PostCreate, PostUpdate, PostDelete, subscribe
+from .views import PostList, PostDetail, PostCreate, PostUpdate, PostDelete, subscribe,PostSearchView
 from .views import IndexView
 from .views import CategoryListView
 
