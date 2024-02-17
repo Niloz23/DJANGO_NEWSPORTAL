@@ -6,8 +6,8 @@
  from django_apscheduler.jobstores import DjangoJobStore
  from django_apscheduler.models import DjangoJobExecution
  import datetime
- from .models import Post
- from .models import Category
+ from NEWSPORTAL.models import Post
+ from NEWSPORTAL.models import Category
  from django.template.loader import render_to_string
  from django.core.mail import EmailMultiAlternatives
  from django.utils import timezone
