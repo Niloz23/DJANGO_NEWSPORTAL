@@ -19,6 +19,7 @@ from .tasks import notifications_on_monday
 from django.utils.translation import gettext as _
 from django.http import HttpResponse
 from django.views import View
+from django.utils.translation import gettext_lazy as _
 class IndexView(LoginRequiredMixin, TemplateView):
     template_name = 'index.html'
 
@@ -26,13 +27,6 @@ class IndexView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context['is_not_authors'] = not self.request.user.groups.filter(name='Authors').exists()
         return context
-
-
-class Index(View):
-    def get(self, request):
-        string = _('Hello world')
-
-        return HttpResponse(string)
 class PostList(ListView):
     model = Post
     ordering = 'title'
@@ -46,6 +40,20 @@ class PostList(ListView):
         context['time_now'] = datetime.utcnow()
         context['next_sale'] = None
         return context
+
+    def get_localit(self, request):
+        string = _(("Все новости"))
+        string2 = _("Описание новостей")
+        string3 = _("Заголовок")
+        string4 = _("Cтатей нет!")
+
+        context = {
+            'string': string,
+            'string': string2,
+            'string': string3,
+            'string': string4,
+        }
+        return HttpResponse(render(request, 'default.html',context))
 
         # Переопределяем функцию получения списка товаров
 

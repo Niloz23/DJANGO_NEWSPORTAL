@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from .views import PostList, PostDetail, PostCreate, PostUpdate, PostDelete, subscribe,PostSearchView
 from .views import IndexView
 from .views import CategoryListView
@@ -6,7 +6,7 @@ from .views import CategoryListView
 
 
 urlpatterns = [
-
+   path('i18n/', include('django.conf.urls.i18n')),
    path('', PostList.as_view()),
    path('<int:pk>', PostDetail.as_view()),
    path('search/', PostSearchView.as_view()),
