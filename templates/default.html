@@ -1,4 +1,4 @@
-
+{% load i18n %}
 {% extends 'flatpages/default.html' %}
 {% load custom_filters %}
 
@@ -7,7 +7,7 @@ Posts
 {% endblock title %}
 
 {% block content %}
-   <h1>Все новости</h1>
+   <h1>{% trans "Все новости" %}</h1>
    <h3>{{ time_now|date:'M d Y' }}</h3>
    <hr>
    {% if posts %}
