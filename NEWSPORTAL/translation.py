@@ -7,7 +7,7 @@ from modeltranslation.translator import register, \
 
 @register(Category)
 class CategoryTranslationOptions(TranslationOptions):
-    fields = ('name','subscribers',)  # указываем, какие именно поля надо переводить в виде кортежа
+    fields = ('name')  # указываем, какие именно поля надо переводить в виде кортежа
 
 
 @register(Post)
