@@ -62,10 +62,8 @@ class PostList(ListView):
         return self.filterset.qs
 
     def get_template_names(self):
-        if self.request.path == '/news/':
-            self.template_name = 'posts.html'
-        elif self.request.path == '/news/search/':
-            self.template_name = 'search.html'
+        if self.request.path == '/news/search/':
+            self.template_name = 'post_search.html'
         return self.template_name
 
 class PostDetail(DetailView):
